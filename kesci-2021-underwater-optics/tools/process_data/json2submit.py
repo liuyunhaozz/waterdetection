@@ -3,10 +3,12 @@ import os
 import torchvision
 import torch
 import numpy as np
-# raw_anno_file = 'data/annotations/testA.json'
-raw_anno_file = 'data/annotations/testB.json'
-result_file = 'results/testB.bbox.json'
-submit_path = 'submit/testB.csv'
+raw_anno_file = 'data/annotations/testA.json'
+result_file = 'results/testA.bbox.json'
+submit_path = 'submit/testA.csv'
+#raw_anno_file = 'data/annotations/testB.json'
+#result_file = 'results/testB.bbox.json'
+#submit_path = 'submit/testB.csv'
 with open(raw_anno_file, 'r') as f:
     annos = json.load(f)
 imageid2name = {}

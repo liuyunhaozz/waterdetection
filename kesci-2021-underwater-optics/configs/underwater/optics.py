@@ -274,10 +274,10 @@ data = dict(
         pipeline=train_pipeline),
     test=dict(
         type=dataset_type,
-        # ann_file=data_root + 'annotations/testA.json',
-        # img_prefix=data_root + 'test-A-image/',
-        ann_file=data_root + 'annotations/val1.json',
-        img_prefix=data_root + 'val1/image/',
+        ann_file=data_root + 'annotations/testA.json',
+        img_prefix=data_root + 'test-A-image/',
+        #ann_file=data_root + 'annotations/testB.json',
+        #img_prefix=data_root + 'test-B-image/',
         classes = classes,
         pipeline=test_pipeline))
 

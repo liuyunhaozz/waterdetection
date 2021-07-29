@@ -84,10 +84,10 @@ def cvt_annotations(img_path, xml_path, out_file):
 
 
 def main():
-    xml_path = 'data/val5/box'
-    img_path = 'data/val5/image'
+    xml_path = 'data/train/box'
+    img_path = 'data/train/image'
     print('processing {} ...'.format("xml format annotations"))
-    cvt_annotations(img_path, xml_path, 'data/annotations/val5.json')
+    cvt_annotations(img_path, xml_path, 'data/annotations/train.json')
     print('Done!')
 
 
