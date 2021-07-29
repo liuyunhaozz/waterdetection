@@ -4,7 +4,7 @@ model = dict(
     pretrained=None,
     backbone=dict(
         type='DetectoRS_ResNet',
-        depth=50,
+        depth=101,
         num_stages=4,
         out_indices=(0, 1, 2, 3),
         frozen_stages=1,
@@ -26,7 +26,7 @@ model = dict(
         rfp_backbone=dict(
             rfp_inplanes=256,
             type='DetectoRS_ResNet',
-            depth=50,
+            depth=101,
             num_stages=4,
             out_indices=(0, 1, 2, 3),
             frozen_stages=1,
@@ -52,8 +52,10 @@ model = dict(
             target_stds=[1.0, 1.0, 1.0, 1.0]),
         loss_cls=dict(
             type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
+        # reg_decoded_bbox = True,  # 使用GIoU时注意添加
         loss_bbox=dict(
             type='SmoothL1Loss', beta=0.1111111111111111, loss_weight=1.0)),
+        # loss_bbox = dict(type='GIoULoss',loss_weight=5.0)),           
     roi_head=dict(
         type='CascadeRoIHead',
         num_stages=3,
@@ -80,8 +82,10 @@ model = dict(
                     use_sigmoid=False,
                     loss_weight=1.0,
                     smoothing=0.001),
+                # reg_decoded_bbox = True,   # 使用GIoU时注意添加
                 loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
                                loss_weight=1.0)),
+                # loss_bbox = dict(type='GIoULoss',loss_weight=5.0)),
             dict(
                 type='Shared2FCBBoxHead',
                 in_channels=256,
@@ -100,6 +104,7 @@ model = dict(
                     smoothing=0.001),
                 loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
                                loss_weight=1.0)),
+                # loss_bbox = dict(type='GIoULoss',loss_weight=5.0)),
             dict(
                 type='Shared2FCBBoxHead',
                 in_channels=256,
@@ -117,6 +122,7 @@ model = dict(
                     loss_weight=1.0,
                     smoothing=0.001),
                 loss_bbox=dict(type='SmoothL1Loss', beta=1.0, loss_weight=1.0))
+                # loss_bbox = dict(type='GIoULoss',loss_weight=5.0))
         ]))
 train_cfg = dict(
     rpn=dict(
@@ -219,8 +225,8 @@ train_pipeline = [
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         type='Resize',
-        img_scale=[(2000, 1216),
-                   (2000, 704)],
+        img_scale=[(1000, 804),
+                   (1000, 352)],
         multiscale_mode='range',
         keep_ratio=True),
     dict(type='RandomFlip', direction=['horizontal'], flip_ratio=0.5),
@@ -247,6 +253,8 @@ test_pipeline = [
             dict(type='Collect', keys=['img']),
         ])
 ]
+
+classes = ("holothurian","echinus","scallop","starfish")
 data = dict(
     samples_per_gpu=1,
     workers_per_gpu=2,
@@ -258,15 +266,19 @@ data = dict(
         filter_empty_gt=True),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_filter_old_scallop.json',
-        img_prefix=data_root + 'train/image/',
+        #ann_file=data_root + 'annotations/train_filter_old_scallop.json',
+        #img_prefix=data_root + 'train/image/',
+        ann_file=data_root + 'annotations/val1.json',
+        img_prefix=data_root + 'val1/image/',
+        classes = classes,
         pipeline=train_pipeline),
     test=dict(
         type=dataset_type,
         # ann_file=data_root + 'annotations/testA.json',
         # img_prefix=data_root + 'test-A-image/',
-        ann_file=data_root + 'annotations/testB.json',
-        img_prefix=data_root + 'test-B-image/',
+        ann_file=data_root + 'annotations/val1.json',
+        img_prefix=data_root + 'val1/image/',
+        classes = classes,
         pipeline=test_pipeline))
 
 evaluation = dict(interval=1, metric='bbox')
@@ -294,6 +306,6 @@ log_config = dict(
 # yapf:enable
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = 'data/pretrained/detectors_htc_r50_1x_coco-329b1453.pth'
+load_from = 'data/pretrained/detectors_htc_r101_20e_coco_20210419_203638-348d533b.pth'
 resume_from = None
 workflow = [('train', 1)]
