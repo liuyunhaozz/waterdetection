@@ -1,0 +1,435 @@
+2021-07-30 22:12:54,643 - mmdet - INFO - Environment info:
+------------------------------------------------------------
+sys.platform: linux
+Python: 3.7.10 | packaged by conda-forge | (default, Feb 19 2021, 16:07:37) [GCC 9.3.0]
+CUDA available: True
+GPU 0,1,2,3,4,5,6,7: GeForce RTX 2080 Ti
+CUDA_HOME: /usr/local/cuda
+NVCC: Cuda compilation tools, release 10.1, V10.1.105
+GCC: gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+PyTorch: 1.6.0+cu101
+PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) oneAPI Math Kernel Library Version 2021.3-Product Build 20210617 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v1.5.0 (Git Hash e2ac1fac44c5078ca927cb9b90e1b3066a0b2ed0)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 10.1
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75
+  - CuDNN 7.6.3
+  - Magma 2.5.2
+  - Build settings: BLAS=MKL, BUILD_TYPE=Release, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DUSE_VULKAN_WRAPPER -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, USE_CUDA=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_STATIC_DISPATCH=OFF, 
+
+TorchVision: 0.7.0+cu101
+OpenCV: 4.5.3
+MMCV: 1.2.4
+MMCV Compiler: GCC 7.3
+MMCV CUDA Compiler: not available
+MMDetection: 2.10.0+28d21cb
+------------------------------------------------------------
+
+2021-07-30 22:12:55,211 - mmdet - INFO - Distributed training: True
+2021-07-30 22:12:55,805 - mmdet - INFO - Config:
+model = dict(
+    type='CascadeRCNN',
+    pretrained=None,
+    backbone=dict(
+        type='DetectoRS_ResNet',
+        depth=101,
+        num_stages=4,
+        out_indices=(0, 1, 2, 3),
+        frozen_stages=1,
+        norm_cfg=dict(type='BN', requires_grad=True),
+        norm_eval=True,
+        style='pytorch',
+        conv_cfg=dict(type='ConvAWS'),
+        sac=dict(type='SAC', use_deform=True),
+        stage_with_sac=(False, True, True, True),
+        output_img=True),
+    neck=dict(
+        type='RFP',
+        in_channels=[256, 512, 1024, 2048],
+        out_channels=256,
+        num_outs=5,
+        rfp_steps=2,
+        aspp_out_channels=64,
+        aspp_dilations=(1, 3, 6, 1),
+        rfp_backbone=dict(
+            rfp_inplanes=256,
+            type='DetectoRS_ResNet',
+            depth=101,
+            num_stages=4,
+            out_indices=(0, 1, 2, 3),
+            frozen_stages=1,
+            norm_cfg=dict(type='BN', requires_grad=True),
+            norm_eval=True,
+            conv_cfg=dict(type='ConvAWS'),
+            sac=dict(type='SAC', use_deform=True),
+            stage_with_sac=(False, True, True, True),
+            pretrained=None,
+            style='pytorch')),
+    rpn_head=dict(
+        type='RPNHead',
+        in_channels=256,
+        feat_channels=256,
+        anchor_generator=dict(
+            type='AnchorGenerator',
+            scales=[8],
+            ratios=[0.5, 1.0, 2.0],
+            strides=[4, 8, 16, 32, 64]),
+        bbox_coder=dict(
+            type='DeltaXYWHBBoxCoder',
+            target_means=[0.0, 0.0, 0.0, 0.0],
+            target_stds=[1.0, 1.0, 1.0, 1.0]),
+        loss_cls=dict(
+            type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
+        loss_bbox=dict(
+            type='SmoothL1Loss', beta=0.1111111111111111, loss_weight=1.0)),
+    roi_head=dict(
+        type='CascadeRoIHead',
+        num_stages=3,
+        stage_loss_weights=[1, 0.5, 0.25],
+        bbox_roi_extractor=dict(
+            type='SingleRoIExtractor',
+            roi_layer=dict(type='RoIAlign', output_size=7, sampling_ratio=0),
+            out_channels=256,
+            featmap_strides=[4, 8, 16, 32],
+            add_context=True),
+        bbox_head=[
+            dict(
+                type='Shared2FCBBoxHead',
+                in_channels=256,
+                fc_out_channels=1024,
+                roi_feat_size=7,
+                num_classes=4,
+                bbox_coder=dict(
+                    type='DeltaXYWHBBoxCoder',
+                    target_means=[0.0, 0.0, 0.0, 0.0],
+                    target_stds=[0.1, 0.1, 0.2, 0.2]),
+                reg_class_agnostic=True,
+                loss_cls=dict(
+                    type='CrossEntropyLoss',
+                    use_sigmoid=False,
+                    loss_weight=1.0,
+                    smoothing=0.001),
+                loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
+                               loss_weight=1.0)),
+            dict(
+                type='Shared2FCBBoxHead',
+                in_channels=256,
+                fc_out_channels=1024,
+                roi_feat_size=7,
+                num_classes=4,
+                bbox_coder=dict(
+                    type='DeltaXYWHBBoxCoder',
+                    target_means=[0.0, 0.0, 0.0, 0.0],
+                    target_stds=[0.05, 0.05, 0.1, 0.1]),
+                reg_class_agnostic=True,
+                loss_cls=dict(
+                    type='CrossEntropyLoss',
+                    use_sigmoid=False,
+                    loss_weight=1.0,
+                    smoothing=0.001),
+                loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
+                               loss_weight=1.0)),
+            dict(
+                type='Shared2FCBBoxHead',
+                in_channels=256,
+                fc_out_channels=1024,
+                roi_feat_size=7,
+                num_classes=4,
+                bbox_coder=dict(
+                    type='DeltaXYWHBBoxCoder',
+                    target_means=[0.0, 0.0, 0.0, 0.0],
+                    target_stds=[0.033, 0.033, 0.067, 0.067]),
+                reg_class_agnostic=True,
+                loss_cls=dict(
+                    type='CrossEntropyLoss',
+                    use_sigmoid=False,
+                    loss_weight=1.0,
+                    smoothing=0.001),
+                loss_bbox=dict(type='SmoothL1Loss', beta=1.0, loss_weight=1.0))
+        ]))
+train_cfg = dict(
+    rpn=dict(
+        assigner=dict(
+            type='MaxIoUAssigner',
+            pos_iou_thr=0.7,
+            neg_iou_thr=0.3,
+            min_pos_iou=0.3,
+            match_low_quality=True,
+            ignore_iof_thr=-1,
+            gpu_assign_thr=5),
+        sampler=dict(
+            type='RandomSampler',
+            num=256,
+            pos_fraction=0.5,
+            neg_pos_ub=-1,
+            add_gt_as_proposals=False),
+        allowed_border=0,
+        pos_weight=-1,
+        debug=False),
+    rpn_proposal=dict(
+        nms_across_levels=False,
+        nms_pre=2000,
+        nms_post=2000,
+        max_num=2000,
+        nms_thr=0.7,
+        min_bbox_size=0),
+    rcnn=[
+        dict(
+            assigner=dict(
+                type='MaxIoUAssigner',
+                pos_iou_thr=0.55,
+                neg_iou_thr=0.55,
+                min_pos_iou=0.55,
+                match_low_quality=False,
+                ignore_iof_thr=-1),
+            sampler=dict(
+                type='RandomSampler',
+                num=512,
+                pos_fraction=0.25,
+                neg_pos_ub=-1,
+                add_gt_as_proposals=True),
+            pos_weight=-1,
+            debug=False),
+        dict(
+            assigner=dict(
+                type='MaxIoUAssigner',
+                pos_iou_thr=0.65,
+                neg_iou_thr=0.65,
+                min_pos_iou=0.65,
+                match_low_quality=False,
+                ignore_iof_thr=-1,
+                gpu_assign_thr=5),
+            sampler=dict(
+                type='RandomSampler',
+                num=512,
+                pos_fraction=0.25,
+                neg_pos_ub=-1,
+                add_gt_as_proposals=True),
+            pos_weight=-1,
+            debug=False),
+        dict(
+            assigner=dict(
+                type='MaxIoUAssigner',
+                pos_iou_thr=0.75,
+                neg_iou_thr=0.75,
+                min_pos_iou=0.75,
+                match_low_quality=False,
+                ignore_iof_thr=-1,
+                gpu_assign_thr=5),
+            sampler=dict(
+                type='RandomSampler',
+                num=512,
+                pos_fraction=0.25,
+                neg_pos_ub=-1,
+                add_gt_as_proposals=True),
+            pos_weight=-1,
+            debug=False)
+    ])
+test_cfg = dict(
+    rpn=dict(
+        nms_across_levels=False,
+        nms_pre=1000,
+        nms_post=1000,
+        max_num=1000,
+        nms_thr=0.7,
+        min_bbox_size=0),
+    rcnn=dict(
+        score_thr=0.001,
+        nms=dict(type='soft_nms', iou_threshold=0.5, min_score=0.001),
+        max_per_img=100))
+dataset_type = 'Underwater'
+data_root = '../data/'
+albu_train_transforms = [
+    dict(type='RandomRotate90', always_apply=False, p=0.5)
+]
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations', with_bbox=True),
+    dict(
+        type='Resize',
+        img_scale=[(4096, 600), (4096, 1000)],
+        multiscale_mode='range',
+        keep_ratio=True),
+    dict(type='RandomFlip', flip_ratio=0.5),
+    dict(
+        type='Normalize',
+        mean=[123.675, 116.28, 103.53],
+        std=[58.395, 57.12, 57.375],
+        to_rgb=True),
+    dict(type='Pad', size_divisor=32),
+    dict(
+        type='Albu',
+        transforms=[dict(type='RandomRotate90', always_apply=False, p=0.5)],
+        bbox_params=dict(
+            type='BboxParams',
+            format='pascal_voc',
+            label_fields=['gt_labels'],
+            min_visibility=0.0,
+            filter_lost_elements=True),
+        keymap=dict(img='image', gt_bboxes='bboxes'),
+        update_pad_shape=False,
+        skip_img_without_anno=True),
+    dict(type='DefaultFormatBundle'),
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=[(4096, 600), (4096, 800), (4096, 1000)],
+        flip=True,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip'),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img'])
+        ])
+]
+classes = ('holothurian', 'echinus', 'scallop', 'starfish')
+data = dict(
+    samples_per_gpu=1,
+    workers_per_gpu=4,
+    train=dict(
+        type='Underwater',
+        ann_file='../data/train/annotations/train.json',
+        img_prefix='../data/train/train-image/',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
+            dict(
+                type='Resize',
+                img_scale=[(4096, 600), (4096, 1000)],
+                multiscale_mode='range',
+                keep_ratio=True),
+            dict(type='RandomFlip', flip_ratio=0.5),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32),
+            dict(
+                type='Albu',
+                transforms=[
+                    dict(type='RandomRotate90', always_apply=False, p=0.5)
+                ],
+                bbox_params=dict(
+                    type='BboxParams',
+                    format='pascal_voc',
+                    label_fields=['gt_labels'],
+                    min_visibility=0.0,
+                    filter_lost_elements=True),
+                keymap=dict(img='image', gt_bboxes='bboxes'),
+                update_pad_shape=False,
+                skip_img_without_anno=True),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+        ],
+        filter_empty_gt=True),
+    val=dict(
+        type='Underwater',
+        ann_file='../data/annotations/train.json',
+        img_prefix='../data/train/train-image/',
+        classes=('holothurian', 'echinus', 'scallop', 'starfish'),
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
+            dict(
+                type='Resize',
+                img_scale=[(4096, 600), (4096, 1000)],
+                multiscale_mode='range',
+                keep_ratio=True),
+            dict(type='RandomFlip', flip_ratio=0.5),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32),
+            dict(
+                type='Albu',
+                transforms=[
+                    dict(type='RandomRotate90', always_apply=False, p=0.5)
+                ],
+                bbox_params=dict(
+                    type='BboxParams',
+                    format='pascal_voc',
+                    label_fields=['gt_labels'],
+                    min_visibility=0.0,
+                    filter_lost_elements=True),
+                keymap=dict(img='image', gt_bboxes='bboxes'),
+                update_pad_shape=False,
+                skip_img_without_anno=True),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+        ]),
+    test=dict(
+        type='Underwater',
+        ann_file='../data/train/annotations/testA.json',
+        img_prefix='../data/test-A-image/',
+        classes=('holothurian', 'echinus', 'scallop', 'starfish'),
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=[(4096, 600), (4096, 800), (4096, 1000)],
+                flip=True,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]))
+evaluation = dict(interval=1, metric='bbox')
+optimizer = dict(type='Adam', lr=0.00024)
+optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
+lr_config = dict(
+    policy='step',
+    warmup='linear',
+    warmup_iters=1000,
+    warmup_ratio=0.3333333333333333,
+    step=[10, 13])
+total_epochs = 15
+checkpoint_config = dict(interval=1)
+log_config = dict(interval=50, hooks=[dict(type='TextLoggerHook')])
+dist_params = dict(backend='nccl')
+log_level = 'INFO'
+work_dir = './work_dirs/detectors_htc_r101_15e_coco_gc'
+load_from = './pretained/detectors_htc_r101_20e_coco_20210419_203638-348d533b.pth'
+resume_from = None
+workflow = [('train', 1)]
+gpu_ids = range(0, 8)
+
+2021-07-30 22:13:05,176 - mmdet - INFO - load checkpoint from ./pretained/detectors_htc_r101_20e_coco_20210419_203638-348d533b.pth
+2021-07-30 22:13:06,108 - mmdet - WARNING - The model and loaded state dict do not match exactly
+
+size mismatch for roi_head.bbox_head.0.fc_cls.weight: copying a param with shape torch.Size([81, 1024]) from checkpoint, the shape in current model is torch.Size([5, 1024]).
+size mismatch for roi_head.bbox_head.0.fc_cls.bias: copying a param with shape torch.Size([81]) from checkpoint, the shape in current model is torch.Size([5]).
+size mismatch for roi_head.bbox_head.1.fc_cls.weight: copying a param with shape torch.Size([81, 1024]) from checkpoint, the shape in current model is torch.Size([5, 1024]).
+size mismatch for roi_head.bbox_head.1.fc_cls.bias: copying a param with shape torch.Size([81]) from checkpoint, the shape in current model is torch.Size([5]).
+size mismatch for roi_head.bbox_head.2.fc_cls.weight: copying a param with shape torch.Size([81, 1024]) from checkpoint, the shape in current model is torch.Size([5, 1024]).
+size mismatch for roi_head.bbox_head.2.fc_cls.bias: copying a param with shape torch.Size([81]) from checkpoint, the shape in current model is torch.Size([5]).
+unexpected key in source state_dict: roi_head.mask_head.0.convs.0.conv.weight, roi_head.mask_head.0.convs.0.conv.bias, roi_head.mask_head.0.convs.1.conv.weight, roi_head.mask_head.0.convs.1.conv.bias, roi_head.mask_head.0.convs.2.conv.weight, roi_head.mask_head.0.convs.2.conv.bias, roi_head.mask_head.0.convs.3.conv.weight, roi_head.mask_head.0.convs.3.conv.bias, roi_head.mask_head.0.upsample.weight, roi_head.mask_head.0.upsample.bias, roi_head.mask_head.0.conv_logits.weight, roi_head.mask_head.0.conv_logits.bias, roi_head.mask_head.1.convs.0.conv.weight, roi_head.mask_head.1.convs.0.conv.bias, roi_head.mask_head.1.convs.1.conv.weight, roi_head.mask_head.1.convs.1.conv.bias, roi_head.mask_head.1.convs.2.conv.weight, roi_head.mask_head.1.convs.2.conv.bias, roi_head.mask_head.1.convs.3.conv.weight, roi_head.mask_head.1.convs.3.conv.bias, roi_head.mask_head.1.upsample.weight, roi_head.mask_head.1.upsample.bias, roi_head.mask_head.1.conv_logits.weight, roi_head.mask_head.1.conv_logits.bias, roi_head.mask_head.1.conv_res.conv.weight, roi_head.mask_head.1.conv_res.conv.bias, roi_head.mask_head.2.convs.0.conv.weight, roi_head.mask_head.2.convs.0.conv.bias, roi_head.mask_head.2.convs.1.conv.weight, roi_head.mask_head.2.convs.1.conv.bias, roi_head.mask_head.2.convs.2.conv.weight, roi_head.mask_head.2.convs.2.conv.bias, roi_head.mask_head.2.convs.3.conv.weight, roi_head.mask_head.2.convs.3.conv.bias, roi_head.mask_head.2.upsample.weight, roi_head.mask_head.2.upsample.bias, roi_head.mask_head.2.conv_logits.weight, roi_head.mask_head.2.conv_logits.bias, roi_head.mask_head.2.conv_res.conv.weight, roi_head.mask_head.2.conv_res.conv.bias, roi_head.semantic_head.lateral_convs.0.conv.weight, roi_head.semantic_head.lateral_convs.0.conv.bias, roi_head.semantic_head.lateral_convs.1.conv.weight, roi_head.semantic_head.lateral_convs.1.conv.bias, roi_head.semantic_head.lateral_convs.2.conv.weight, roi_head.semantic_head.lateral_convs.2.conv.bias, roi_head.semantic_head.lateral_convs.3.conv.weight, roi_head.semantic_head.lateral_convs.3.conv.bias, roi_head.semantic_head.lateral_convs.4.conv.weight, roi_head.semantic_head.lateral_convs.4.conv.bias, roi_head.semantic_head.convs.0.conv.weight, roi_head.semantic_head.convs.0.conv.bias, roi_head.semantic_head.convs.1.conv.weight, roi_head.semantic_head.convs.1.conv.bias, roi_head.semantic_head.convs.2.conv.weight, roi_head.semantic_head.convs.2.conv.bias, roi_head.semantic_head.convs.3.conv.weight, roi_head.semantic_head.convs.3.conv.bias, roi_head.semantic_head.conv_embedding.conv.weight, roi_head.semantic_head.conv_embedding.conv.bias, roi_head.semantic_head.conv_logits.weight, roi_head.semantic_head.conv_logits.bias
+
+2021-07-30 22:13:06,124 - mmdet - INFO - Start running, host: deeplearn@supermicro-SYS-4028GR-TR, work_dir: /home/deeplearn/waterdetection/underwater-detection/work_dirs/detectors_htc_r101_15e_coco_gc
+2021-07-30 22:13:06,124 - mmdet - INFO - workflow: [('train', 1)], max: 15 epochs

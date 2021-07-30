@@ -1,3 +1,4 @@
+#fp16 = dict(loss_scale=512.)
 
 model = dict(
     type='CascadeRCNN',
@@ -65,6 +66,7 @@ model = dict(
             roi_layer=dict(type='RoIAlign', output_size=7, sampling_ratio=0),
             out_channels=256,
             featmap_strides=[4, 8, 16, 32]),
+            #gc_context=True),
         bbox_head=[
             dict(
                 type='Shared2FCBBoxHead',
@@ -218,6 +220,7 @@ test_cfg = dict(
 
 dataset_type = 'UnderwaterOpticsDataset'
 data_root = 'data/'
+albu_train_transforms = [dict(type='RandomRotate90', always_apply=False, p=0.5)] #albu
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -234,6 +237,16 @@ train_pipeline = [
     dict(type='AutoAugment', autoaug_type='v1'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
+    dict(type='Albu',
+         transforms=albu_train_transforms,
+         bbox_params=dict(type='BboxParams',
+                          format='pascal_voc',
+                          label_fields=['gt_labels'],
+                          min_visibility=0.0,
+                          filter_lost_elements=True),
+         keymap={'img': 'image', 'gt_bboxes': 'bboxes'},
+         update_pad_shape=False,
+         skip_img_without_anno=True),
     dict(type='DefaultFormatBundle'),
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
 ]
@@ -242,7 +255,8 @@ test_pipeline = [
     dict(
         type='MultiScaleFlipAug',
         # 0.569
-        img_scale=[(2000, 704), (2000, 960), (2000, 1216)],
+        #img_scale=[(1000, 352), (1000, 480), (1000, 804)],
+        img_scale=[(4096, 600), (4096, 480), (4096, 804)],
         flip=True,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -266,10 +280,10 @@ data = dict(
         filter_empty_gt=True),
     val=dict(
         type=dataset_type,
-        #ann_file=data_root + 'annotations/train_filter_old_scallop.json',
-        #img_prefix=data_root + 'train/image/',
-        ann_file=data_root + 'annotations/val1.json',
-        img_prefix=data_root + 'val1/image/',
+        ann_file=data_root + 'annotations/train_filter_old_scallop.json',
+        img_prefix=data_root + 'train/image/',
+        #ann_file=data_root + 'annotations/val1.json',
+        #img_prefix=data_root + 'val1/image/',
         classes = classes,
         pipeline=train_pipeline),
     test=dict(
@@ -278,6 +292,8 @@ data = dict(
         img_prefix=data_root + 'test-A-image/',
         #ann_file=data_root + 'annotations/testB.json',
         #img_prefix=data_root + 'test-B-image/',
+        #ann_file=data_root + 'annotations/val1.json',
+        #img_prefix=data_root + 'val1/image/',
         classes = classes,
         pipeline=test_pipeline))
 
