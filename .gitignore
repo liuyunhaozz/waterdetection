@@ -2,3 +2,5 @@ data
 *.log
 *.pth
 *.whl
+
+underwater-detection/work_dirs
