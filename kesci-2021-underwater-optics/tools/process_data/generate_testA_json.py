@@ -10,7 +10,7 @@ from PIL import Image
 
 if __name__ == '__main__':
     print("generate testA json...")
-    with open('data/annotations/train.json', 'r') as f:
+    with open('../data/train/annotations/train_no.json', 'r') as f:
         categories = json.load(f)['categories']
     # img_root = 'data/tile_round1_testA_20201231/testA_imgs/'
     img_root = '../data/test-A-image/'

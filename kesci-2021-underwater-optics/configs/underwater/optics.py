@@ -319,5 +319,5 @@ log_config = dict(
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = '../data/pretrained/detectors_htc_r101_20e_coco_20210419_203638-348d533b.pth'
-resume_from = None
+resume_from = 'work_dirs/optics/epoch_12.pth'
 workflow = [('train', 1)]

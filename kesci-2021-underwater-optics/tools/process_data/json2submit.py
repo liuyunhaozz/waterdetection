@@ -3,7 +3,7 @@ import os
 import torchvision
 import torch
 import numpy as np
-raw_anno_file = 'data/annotations/testA.json'
+raw_anno_file = '../data/train/annotations/testA.json'
 result_file = 'results/testA.bbox.json'
 submit_path = 'submit/testA.csv'
 #raw_anno_file = 'data/annotations/testB.json'
