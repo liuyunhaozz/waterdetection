@@ -85,8 +85,8 @@ def main():
     # print('Done!')
     
     print("train data!")
-    xml_path = '../data/train/train-box'
-    img_path = '../data/train/train-image'
+    xml_path = '../data/train/box'
+    img_path = '../data/train/image'
     print('processing {} ...'.format("xml format annotations"))
     os.makedirs('../data/train/annotations/', exist_ok=True)
     cvt_annotations(img_path, xml_path, '../data/train/annotations/train.json')

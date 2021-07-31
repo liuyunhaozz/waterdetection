@@ -81,8 +81,8 @@ def generate_json(img_root, annos, out_file):
 
 if __name__ == '__main__':
     np.random.seed(121)
-    data_json_raw = json.load(open("../underwater_data/train/annotations/trainall-revised-v3.json", "r"))  # gt box
-    data_json = json.load(open("../underwater_data/train/annotations/revisedv3.bbox.json", "r"))  # pred box
+    data_json_raw = json.load(open("../data/train/annotations/train.json", "r"))  # gt box
+    data_json = json.load(open("../data/train/annotations/train.bbox.json", "r"))  # pred box
     img = data_json_raw['images']
 
     unclear_anno_img = []  # 看不清的图片，自己记录

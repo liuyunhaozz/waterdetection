@@ -17,7 +17,7 @@ def save(images, annotations):
     for k, v in label_ids.items():
         categories.append({"name": k, "id": v})
     ann['categories'] = categories
-    json.dump(ann, open('../data/train/annotations/testB.json', 'w'))
+    json.dump(ann, open('../data/train/annotations/testA.json', 'w'))
 
 
 def test_dataset(im_dir):
@@ -44,7 +44,7 @@ def test_dataset(im_dir):
 
 
 if __name__ == '__main__':
-    # test_dir = '../data/test-A-image/'
-    test_dir = '../data/test-B-image/'
+    test_dir = '../data/test-A-image/'
+    #test_dir = '../data/test-B-image/'
     print("generate test json label file.")
     test_dataset(test_dir)

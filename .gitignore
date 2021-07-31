@@ -2,5 +2,7 @@ data
 *.log
 *.pth
 *.whl
-
-underwater-detection/work_dirs
+*.json
+*.csv
+./underwater-detection/work_dirs/
+./underwater-detection/submit/

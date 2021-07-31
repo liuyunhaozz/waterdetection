@@ -1,11 +1,10 @@
-#fp16 = dict(loss_scale=512.)
 
 model = dict(
     type='CascadeRCNN',
     pretrained=None,
     backbone=dict(
         type='DetectoRS_ResNet',
-        depth=101,
+        depth=50,
         num_stages=4,
         out_indices=(0, 1, 2, 3),
         frozen_stages=1,
@@ -27,7 +26,7 @@ model = dict(
         rfp_backbone=dict(
             rfp_inplanes=256,
             type='DetectoRS_ResNet',
-            depth=101,
+            depth=50,
             num_stages=4,
             out_indices=(0, 1, 2, 3),
             frozen_stages=1,
@@ -219,8 +218,8 @@ test_cfg = dict(
         nms=dict(type='soft_nms', iou_threshold=0.5, min_score=0.0001), max_per_img=300))
 
 dataset_type = 'UnderwaterOpticsDataset'
-data_root = 'data/'
-albu_train_transforms = [dict(type='RandomRotate90', always_apply=False, p=0.5)] #albu
+data_root = '../data/train/'
+#albu_train_transforms = [dict(type='RandomRotate90', always_apply=False, p=0.5)] #albu
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -228,25 +227,25 @@ train_pipeline = [
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         type='Resize',
-        img_scale=[(1000, 804),
-                   (1000, 352)],
+        img_scale=[(1400, 1000),
+                   (1400, 600)],
         multiscale_mode='range',
         keep_ratio=True),
     dict(type='RandomFlip', direction=['horizontal'], flip_ratio=0.5),
-    dict(type='MotionBlur', p=0.3),
-    dict(type='AutoAugment', autoaug_type='v1'),
+    #dict(type='MotionBlur', p=0.3),
+    #dict(type='AutoAugment', autoaug_type='v1'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
-    dict(type='Albu',
-         transforms=albu_train_transforms,
-         bbox_params=dict(type='BboxParams',
-                          format='pascal_voc',
-                          label_fields=['gt_labels'],
-                          min_visibility=0.0,
-                          filter_lost_elements=True),
-         keymap={'img': 'image', 'gt_bboxes': 'bboxes'},
-         update_pad_shape=False,
-         skip_img_without_anno=True),
+    # """dict(type='Albu',
+    #      transforms=albu_train_transforms,
+    #      bbox_params=dict(type='BboxParams',
+    #                       format='pascal_voc',
+    #                       label_fields=['gt_labels'],
+    #                       min_visibility=0.0,
+    #                       filter_lost_elements=True),
+    #      keymap={'img': 'image', 'gt_bboxes': 'bboxes'},
+    #      update_pad_shape=False,
+    #      skip_img_without_anno=True),"""
     dict(type='DefaultFormatBundle'),
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
 ]
@@ -256,7 +255,7 @@ test_pipeline = [
         type='MultiScaleFlipAug',
         # 0.569
         #img_scale=[(1000, 352), (1000, 480), (1000, 804)],
-        img_scale=[(4096, 600), (4096, 480), (4096, 804)],
+        img_scale=[(1200, 352), (1200, 480), (1200, 804)],
         flip=True,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -268,23 +267,22 @@ test_pipeline = [
         ])
 ]
 
-classes = ("holothurian","echinus","scallop","starfish")
+
 data = dict(
     samples_per_gpu=1,
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_filter_old_scallop.json',
-        img_prefix=data_root + 'train/image/',
+        ann_file=data_root + 'annotations/train.json',
+        img_prefix=data_root + 'image/',
         pipeline=train_pipeline,
         filter_empty_gt=True),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_filter_old_scallop.json',
-        img_prefix=data_root + 'train/image/',
+        ann_file=data_root + 'annotations/train.json',
+        img_prefix=data_root + 'image/',
         #ann_file=data_root + 'annotations/val1.json',
         #img_prefix=data_root + 'val1/image/',
-        classes = classes,
         pipeline=train_pipeline),
     test=dict(
         type=dataset_type,
@@ -294,7 +292,6 @@ data = dict(
         #img_prefix=data_root + 'test-B-image/',
         #ann_file=data_root + 'annotations/val1.json',
         #img_prefix=data_root + 'val1/image/',
-        classes = classes,
         pipeline=test_pipeline))
 
 evaluation = dict(interval=1, metric='bbox')
@@ -311,7 +308,7 @@ lr_config = dict(
     step=[16, 19])
 total_epochs = 20
 
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=4)
 # yapf:disable
 log_config = dict(
     interval=20,
@@ -322,6 +319,6 @@ log_config = dict(
 # yapf:enable
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = 'data/pretrained/detectors_htc_r101_20e_coco_20210419_203638-348d533b.pth'
+load_from = '../data/pretrained/detectors_htc_r50_1x_coco-329b1453.pth'
 resume_from = None
 workflow = [('train', 1)]

@@ -17,8 +17,8 @@ if __name__ == '__main__':
             u_paths.append(path)
 
 
-    # 划分数据集， 从干净数据集中选10%作为验证集, 剩下的干净数据和噪声数据作为训练集
-    val_size = int(len(image_paths) * 0.1)
+    # 划分数据集， 从干净数据集中选4%作为验证集, 剩下的干净数据和噪声数据作为训练集
+    val_size = int(len(image_paths) * 0.04)
     val_paths = clean_paths[:val_size]
     train_paths = clean_paths[val_size:] + u_paths
 

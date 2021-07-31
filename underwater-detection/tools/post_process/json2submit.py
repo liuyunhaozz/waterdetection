@@ -13,7 +13,7 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    test_json_raw = json.load(open("../data/train/annotations/testB.json", "r"))
+    test_json_raw = json.load(open("../data/train/annotations/testA.json", "r"))
     # test_json = json.load(open("results/" + args.test_json, "r"))
     test_json = json.load(open(args.test_json, "r"))
     submit_file_name = args.submit_file
