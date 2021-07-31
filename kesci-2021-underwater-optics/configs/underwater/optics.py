@@ -4,7 +4,7 @@ model = dict(
     pretrained=None,
     backbone=dict(
         type='DetectoRS_ResNet',
-        depth=50,
+        depth=101,
         num_stages=4,
         out_indices=(0, 1, 2, 3),
         frozen_stages=1,
@@ -26,7 +26,7 @@ model = dict(
         rfp_backbone=dict(
             rfp_inplanes=256,
             type='DetectoRS_ResNet',
-            depth=50,
+            depth=101,
             num_stages=4,
             out_indices=(0, 1, 2, 3),
             frozen_stages=1,
@@ -227,13 +227,13 @@ train_pipeline = [
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         type='Resize',
-        img_scale=[(1400, 1000),
-                   (1400, 600)],
+        img_scale=[(1200, 804),
+                   (1200, 352)],
         multiscale_mode='range',
         keep_ratio=True),
     dict(type='RandomFlip', direction=['horizontal'], flip_ratio=0.5),
-    #dict(type='MotionBlur', p=0.3),
-    #dict(type='AutoAugment', autoaug_type='v1'),
+    dict(type='MotionBlur', p=0.3),
+    dict(type='AutoAugment', autoaug_type='v1'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
     # """dict(type='Albu',
@@ -254,7 +254,6 @@ test_pipeline = [
     dict(
         type='MultiScaleFlipAug',
         # 0.569
-        #img_scale=[(1000, 352), (1000, 480), (1000, 804)],
         img_scale=[(1200, 352), (1200, 480), (1200, 804)],
         flip=True,
         transforms=[
@@ -273,13 +272,13 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train.json',
+        ann_file=data_root + 'annotations/train_no.json',
         img_prefix=data_root + 'image/',
         pipeline=train_pipeline,
         filter_empty_gt=True),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train.json',
+        ann_file=data_root + 'annotations/train_no.json',
         img_prefix=data_root + 'image/',
         #ann_file=data_root + 'annotations/val1.json',
         #img_prefix=data_root + 'val1/image/',
@@ -287,14 +286,14 @@ data = dict(
     test=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/testA.json',
-        img_prefix=data_root + 'test-A-image/',
+        img_prefix=data_root + '../test-A-image/',
         #ann_file=data_root + 'annotations/testB.json',
         #img_prefix=data_root + 'test-B-image/',
         #ann_file=data_root + 'annotations/val1.json',
         #img_prefix=data_root + 'val1/image/',
         pipeline=test_pipeline))
 
-evaluation = dict(interval=1, metric='bbox')
+evaluation = dict(interval=10, metric='bbox')
 
 # optimizer
 optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
@@ -319,6 +318,6 @@ log_config = dict(
 # yapf:enable
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = '../data/pretrained/detectors_htc_r50_1x_coco-329b1453.pth'
+load_from = '../data/pretrained/detectors_htc_r101_20e_coco_20210419_203638-348d533b.pth'
 resume_from = None
 workflow = [('train', 1)]

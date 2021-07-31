@@ -13,8 +13,8 @@ if __name__ == '__main__':
     with open('data/annotations/train.json', 'r') as f:
         categories = json.load(f)['categories']
     # img_root = 'data/tile_round1_testA_20201231/testA_imgs/'
-    img_root = 'data/test-A-image/'
-    save_path_root = "data/annotations/"
+    img_root = '../data/test-A-image/'
+    save_path_root = "../data/train/annotations/"
     images = []
     annotations = []
     image_id = 1

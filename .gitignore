@@ -6,3 +6,4 @@ data
 *.csv
 ./underwater-detection/work_dirs/
 ./underwater-detection/submit/
+*.out
