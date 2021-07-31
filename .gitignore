@@ -8,3 +8,4 @@ data
 ./underwater-detection/submit/
 kesci-2021-underwater-optics/work_dirs/
 kesci-2021-underwater-optics/submit/
+*.out
