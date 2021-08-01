@@ -11,7 +11,7 @@ from .test_time_aug import MultiScaleFlipAug
 from .transforms import (Albu, CutOut, Expand, MinIoURandomCrop, Normalize,
                          Pad, PhotoMetricDistortion, RandomCenterCropPad,
                          RandomCrop, RandomFlip, Resize, SegRescale, Mixup,
-                         AutoAugment, SoftGridMask, BBoxJitter)
+                         AutoAugment, MotionBlur,SoftGridMask, BBoxJitter)
 from .loadingmasoic import LoadMosaicImageAndAnnotations
 
 __all__ = [
@@ -21,7 +21,7 @@ __all__ = [
     'LoadMultiChannelImageFromFiles', 'LoadProposals', 'MultiScaleFlipAug',
     'Resize', 'RandomFlip', 'Pad', 'RandomCrop', 'Normalize', 'SegRescale',
     'MinIoURandomCrop', 'Expand', 'PhotoMetricDistortion', 'Albu',
-    'InstaBoost', 'RandomCenterCropPad', 'AutoAugment', 'CutOut', 'Shear',
+    'InstaBoost', 'RandomCenterCropPad', 'AutoAugment', "MotionBlur",'CutOut', 'Shear',
     'Rotate', 'ColorTransform', 'EqualizeTransform', 'BrightnessTransform',
     'ContrastTransform', 'Translate', 'LoadMosaicImageAndAnnotations', 'Mixup',
     'AutoAugment', 'SoftGridMask', 'BBoxJitter'

@@ -219,7 +219,7 @@ test_cfg = dict(
 
 dataset_type = 'UnderwaterOpticsDataset'
 data_root = '../data/train/'
-#albu_train_transforms = [dict(type='RandomRotate90', always_apply=False, p=0.5)] #albu
+albu_train_transforms = [dict(type='RandomRotate90', always_apply=False, p=0.5)] #albu
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -231,7 +231,7 @@ train_pipeline = [
                    (1200, 352)],
         multiscale_mode='range',
         keep_ratio=True),
-    dict(type='RandomFlip', direction=['horizontal'], flip_ratio=0.5),
+    dict(type='RandomFlip',flip_ratio=0.5),
     dict(type='MotionBlur', p=0.3),
     dict(type='AutoAugment', autoaug_type='v1'),
     dict(type='Normalize', **img_norm_cfg),
@@ -272,25 +272,25 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_c1.json',
+        ann_file=data_root + 'annotations/train_c2.json',
         img_prefix=data_root + 'image/',
         pipeline=train_pipeline,
         filter_empty_gt=True),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_c1.json',
+        ann_file=data_root + 'annotations/train_c2.json',
         img_prefix=data_root + 'image/',
         #ann_file=data_root + 'annotations/val1.json',
         #img_prefix=data_root + 'val1/image/',
         pipeline=train_pipeline),
     test=dict(
         type=dataset_type,
-        #ann_file=data_root + 'annotations/testA.json',
-        #img_prefix=data_root + '../test-A-image/',
+        ann_file=data_root + 'annotations/testA.json',
+        img_prefix=data_root + '../test-A-image/',
         #ann_file=data_root + 'annotations/testB.json',
         #img_prefix=data_root + 'test-B-image/',
-        ann_file=data_root + 'annotations/train.json',
-        img_prefix=data_root + 'image/',
+        #ann_file=data_root + 'annotations/train_c1.json',
+        #img_prefix=data_root + 'image/',
         pipeline=test_pipeline))
 
 evaluation = dict(interval=10, metric='bbox')
@@ -305,9 +305,9 @@ lr_config = dict(
     warmup_iters=500,
     warmup_ratio=0.001,
     step=[16, 19])
-total_epochs = 20
+total_epochs = 25
 
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=2)
 # yapf:disable
 log_config = dict(
     interval=20,

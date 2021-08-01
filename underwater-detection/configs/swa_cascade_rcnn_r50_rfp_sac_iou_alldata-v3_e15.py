@@ -4,7 +4,7 @@ model = dict(
     pretrained=None,
     backbone=dict(
         type='DetectoRS_ResNet',
-        depth=50,
+        depth=101, # 修改深度
         num_stages=4,
         out_indices=(0, 1, 2, 3),
         frozen_stages=1,
@@ -24,7 +24,7 @@ model = dict(
         rfp_backbone=dict(
             rfp_inplanes=256,
             type='DetectoRS_ResNet',
-            depth=50,
+            depth=101, #修改深度
             num_stages=4,
             out_indices=(0, 1, 2, 3),
             frozen_stages=1,
@@ -40,7 +40,7 @@ model = dict(
         feat_channels=256,
         anchor_generator=dict(
             type='AnchorGenerator',
-            scales=[8],
+            scales=[8], 
             ratios=[0.5, 1.0, 2.0],
             strides=[4, 8, 16, 32, 64]),
         bbox_coder=dict(
@@ -216,7 +216,7 @@ data = dict(
     workers_per_gpu=4,
     train=dict(
         type='Underwater',
-        ann_file='../data/train/annotations/trainall-revised-v3.json',
+        ann_file='../data/train/annotations/train_c.json',
         img_prefix='../data/train/image/',
         pipeline=[
             dict(type='LoadImageFromFile'),
@@ -227,6 +227,8 @@ data = dict(
                 multiscale_mode='range',
                 keep_ratio=True),
             dict(type='RandomFlip', flip_ratio=0.5),
+            dict(type='MotionBlur', p=0.3),
+            dict(type='AutoAugment', autoaug_type='v1'),
             dict(
                 type='Normalize',
                 mean=[123.675, 116.28, 103.53],
@@ -252,7 +254,7 @@ data = dict(
         ]),
     val=dict(
         type='Underwater',
-        ann_file='../data/train/annotations/val-revised.json',
+        ann_file='../data/train/annotations/train_c.json',
         img_prefix='../data/train/image/',
         pipeline=[
             dict(type='LoadImageFromFile'),
@@ -263,6 +265,8 @@ data = dict(
                 transforms=[
                     dict(type='Resize', keep_ratio=True),
                     dict(type='RandomFlip'),
+                    dict(type='MotionBlur', p=0.3),
+                    dict(type='AutoAugment', autoaug_type='v1'),
                     dict(
                         type='Normalize',
                         mean=[123.675, 116.28, 103.53],
@@ -307,9 +311,9 @@ workflow = [('train', 1)]
 gpu_ids = range(0, 1)
 only_swa_training = True
 swa_training = True
-swa_load_from = './revised_dirs/cascade_rcnn_r50_rfp_sac_iou_alldata-v3_e15/epoch_15.pth'
+swa_load_from = '../kesci-2021-underwater-optics/work_dirs/optics/epoch_15.pth'
 swa_resume_from = None
-swa_optimizer = dict(type='Adam', lr=3e-05)
+swa_optimizer = dict(type='Adam', lr=1e-04)
 swa_optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
 swa_lr_config = dict(
     policy='cyclic',

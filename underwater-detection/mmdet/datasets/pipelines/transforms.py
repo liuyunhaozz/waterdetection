@@ -177,6 +177,48 @@ class Mixup(object):
                                                                                                            self.mixup,
                                                                                                            self.json_path,
                                                                                                            self.img_path)
+@PIPELINES.register_module
+class MotionBlur(object):
+    """Motion blurring images
+    Args:
+        p (float): the motion blurring probability.
+    """
+
+    def __init__(self, p=None):
+        self.p = p
+        if p is not None:
+            assert p >= 0 and p <= 1
+
+    def motion_blur(self, img, img_shape):
+        """Motion Blurring image.
+        Args:
+            img_shape(tuple): (height, width)
+        """
+        if img_shape[1] <= 750:
+            kernel_size = int(random.sample(range(10, 20), 1)[0])
+        elif img_shape[1] < 2000 and img_shape[1] > 750:
+            kernel_size = int(random.sample(range(20, 60), 1)[0])
+        elif img_shape[1] >= 2000:
+            kernel_size = int(random.sample(range(100, 140), 1)[0])
+        kernel_motion_blur = np.zeros((kernel_size, kernel_size))
+        kernel_motion_blur[int((kernel_size - 1) / 2), :] = np.ones(kernel_size)
+        kernel_motion_blur = kernel_motion_blur / kernel_size
+        img = cv2.filter2D(img, -1, kernel_motion_blur)
+        return img
+
+    def __call__(self, results):
+        if 'motion_blur' not in results:
+            motion_blur = True if np.random.rand() < self.p else False
+            results['motion_blur'] = motion_blur
+        if results['motion_blur']:
+            # motion blurring image
+            results['img'] = self.motion_blur(results['img'], results['img_shape'])
+        return results
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(p={})'.format(
+            self.p)
+            
 
 # infer to:https://github.com/MySuperSoul/TileDetection/blob/32449ef57aa11d5b0eb077f511b5c9920a436c8b/mmdet/datasets/pipelines/transforms.py#L28    
 @PIPELINES.register_module()

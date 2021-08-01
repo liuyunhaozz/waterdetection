@@ -81,7 +81,7 @@ def generate_json(img_root, annos, out_file):
 
 if __name__ == '__main__':
     np.random.seed(121)
-    data_json_raw = json.load(open("../data/train/annotations/train.json", "r"))  # gt box
+    data_json_raw = json.load(open("../data/train/annotations/train_c1.json", "r"))  # gt box
     data_json = json.load(open("../data/train/annotations/train.bbox.json", "r"))  # pred box
     img = data_json_raw['images']
 
@@ -189,7 +189,7 @@ if __name__ == '__main__':
     val_revised_annos = revised_annos[train_size:]
     print("all revised data!")
     generate_json('../data/train/image', revised_annos,
-                  '../data/train/annotations/train_c1.json')
+                  '../data/train/annotations/train_c2.json')
     #print("train revised data!")
     #generate_json('../underwater_data/train/image', train_revised_annos,
                   #'../underwater_data/train/annotations/train-revised-v4.json')
