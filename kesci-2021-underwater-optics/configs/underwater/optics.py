@@ -219,7 +219,6 @@ test_cfg = dict(
 
 dataset_type = 'UnderwaterOpticsDataset'
 data_root = '../data/train/'
-albu_train_transforms = [dict(type='RandomRotate90', always_apply=False, p=0.5)] #albu
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -231,21 +230,11 @@ train_pipeline = [
                    (1200, 352)],
         multiscale_mode='range',
         keep_ratio=True),
-    dict(type='RandomFlip',flip_ratio=0.5),
+    dict(type='RandomFlip', direction=['horizontal'], flip_ratio=0.5),
     dict(type='MotionBlur', p=0.3),
     dict(type='AutoAugment', autoaug_type='v1'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
-          dict(type='Albu',
-          transforms=albu_train_transforms,
-          bbox_params=dict(type='BboxParams',
-                           format='pascal_voc',
-                           label_fields=['gt_labels'],
-                           min_visibility=0.0,
-                           filter_lost_elements=True),
-          keymap={'img': 'image', 'gt_bboxes': 'bboxes'},
-          update_pad_shape=False,
-          skip_img_without_anno=True),
     dict(type='DefaultFormatBundle'),
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
 ]
@@ -305,9 +294,9 @@ lr_config = dict(
     warmup_iters=500,
     warmup_ratio=0.001,
     step=[16, 19])
-total_epochs = 25
+total_epochs = 22
 
-checkpoint_config = dict(interval=2)
+checkpoint_config = dict(interval=1)
 # yapf:disable
 log_config = dict(
     interval=20,
@@ -319,5 +308,5 @@ log_config = dict(
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = '../data/pretrained/detectors_htc_r101_20e_coco_20210419_203638-348d533b.pth'
-resume_from = None
+resume_from = 'work_dirs/optics/epoch_2x.pth'
 workflow = [('train', 1)]
