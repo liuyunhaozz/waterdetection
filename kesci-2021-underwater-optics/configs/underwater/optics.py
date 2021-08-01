@@ -154,9 +154,9 @@ train_cfg = dict(
         dict(
             assigner=dict(
                 type='MaxIoUAssigner',
-                pos_iou_thr=0.5,
-                neg_iou_thr=0.5,
-                min_pos_iou=0.5,
+                pos_iou_thr=0.55,
+                neg_iou_thr=0.55,
+                min_pos_iou=0.55,
                 match_low_quality=False,
                 ignore_iof_thr=-1),
             sampler=dict(
@@ -170,9 +170,9 @@ train_cfg = dict(
         dict(
             assigner=dict(
                 type='MaxIoUAssigner',
-                pos_iou_thr=0.6,
-                neg_iou_thr=0.6,
-                min_pos_iou=0.6,
+                pos_iou_thr=0.65,
+                neg_iou_thr=0.65,
+                min_pos_iou=0.65,
                 match_low_quality=False,
                 ignore_iof_thr=-1),
             sampler=dict(
@@ -186,9 +186,9 @@ train_cfg = dict(
         dict(
             assigner=dict(
                 type='MaxIoUAssigner',
-                pos_iou_thr=0.7,
-                neg_iou_thr=0.7,
-                min_pos_iou=0.7,
+                pos_iou_thr=0.75,
+                neg_iou_thr=0.75,
+                min_pos_iou=0.75,
                 match_low_quality=False,
                 ignore_iof_thr=-1),
             sampler=dict(
@@ -236,16 +236,16 @@ train_pipeline = [
     dict(type='AutoAugment', autoaug_type='v1'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
-    # """dict(type='Albu',
-    #      transforms=albu_train_transforms,
-    #      bbox_params=dict(type='BboxParams',
-    #                       format='pascal_voc',
-    #                       label_fields=['gt_labels'],
-    #                       min_visibility=0.0,
-    #                       filter_lost_elements=True),
-    #      keymap={'img': 'image', 'gt_bboxes': 'bboxes'},
-    #      update_pad_shape=False,
-    #      skip_img_without_anno=True),"""
+          dict(type='Albu',
+          transforms=albu_train_transforms,
+          bbox_params=dict(type='BboxParams',
+                           format='pascal_voc',
+                           label_fields=['gt_labels'],
+                           min_visibility=0.0,
+                           filter_lost_elements=True),
+          keymap={'img': 'image', 'gt_bboxes': 'bboxes'},
+          update_pad_shape=False,
+          skip_img_without_anno=True),
     dict(type='DefaultFormatBundle'),
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
 ]
@@ -272,25 +272,25 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_no.json',
+        ann_file=data_root + 'annotations/train_c1.json',
         img_prefix=data_root + 'image/',
         pipeline=train_pipeline,
         filter_empty_gt=True),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_no.json',
+        ann_file=data_root + 'annotations/train_c1.json',
         img_prefix=data_root + 'image/',
         #ann_file=data_root + 'annotations/val1.json',
         #img_prefix=data_root + 'val1/image/',
         pipeline=train_pipeline),
     test=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/testA.json',
-        img_prefix=data_root + '../test-A-image/',
+        #ann_file=data_root + 'annotations/testA.json',
+        #img_prefix=data_root + '../test-A-image/',
         #ann_file=data_root + 'annotations/testB.json',
         #img_prefix=data_root + 'test-B-image/',
-        #ann_file=data_root + 'annotations/val1.json',
-        #img_prefix=data_root + 'val1/image/',
+        ann_file=data_root + 'annotations/train.json',
+        img_prefix=data_root + 'image/',
         pipeline=test_pipeline))
 
 evaluation = dict(interval=10, metric='bbox')
@@ -319,5 +319,5 @@ log_config = dict(
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = '../data/pretrained/detectors_htc_r101_20e_coco_20210419_203638-348d533b.pth'
-resume_from = 'work_dirs/optics/epoch_12.pth'
+resume_from = None
 workflow = [('train', 1)]

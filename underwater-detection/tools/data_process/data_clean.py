@@ -188,14 +188,14 @@ if __name__ == '__main__':
     train_revised_annos = revised_annos[:train_size]
     val_revised_annos = revised_annos[train_size:]
     print("all revised data!")
-    generate_json('../underwater_data/train/image', revised_annos,
-                  '../underwater_data/train/annotations/trainall-revised-v4.json')
-    print("train revised data!")
-    generate_json('../underwater_data/train/image', train_revised_annos,
-                  '../underwater_data/train/annotations/train-revised-v4.json')
-    print("val revised data!")
-    generate_json('../underwater_data/train/image', val_revised_annos,
-                  '../underwater_data/train/annotations/val-revised-v4.json')
+    generate_json('../data/train/image', revised_annos,
+                  '../data/train/annotations/train_c1.json')
+    #print("train revised data!")
+    #generate_json('../underwater_data/train/image', train_revised_annos,
+                  #'../underwater_data/train/annotations/train-revised-v4.json')
+    #print("val revised data!")
+    #generate_json('../underwater_data/train/image', val_revised_annos,
+                  #'../underwater_data/train/annotations/val-revised-v4.json')
         # if flag:
         #     diff_boxes = np.array(diff_boxes)
         #     # print(imgid2name[imgid])
