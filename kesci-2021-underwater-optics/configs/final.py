@@ -220,8 +220,8 @@ train_pipeline = [
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         type='Resize',
-        img_scale=[(1720, 1216),
-                   (1720, 704)],
+        img_scale=[(1740, 1216),
+                   (1740, 704)],
         multiscale_mode='range',
         keep_ratio=True),
     dict(type='RandomFlip', direction=['horizontal'], flip_ratio=0.5),
@@ -237,7 +237,7 @@ test_pipeline = [
     dict(
         type='MultiScaleFlipAug',
         # 0.568
-        img_scale=[(1720, 704), (1720, 960), (1720, 1216)],
+        img_scale=[(1740, 704), (1740, 960), (1740, 1216)],
         flip=True,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -253,13 +253,13 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_c1.json',
+        ann_file=data_root + 'annotations/train_c3.json',
         img_prefix=data_root + 'image/',
         pipeline=train_pipeline,
         filter_empty_gt=True),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_c1.json',
+        ann_file=data_root + 'annotations/train_c3.json',
         img_prefix=data_root + 'image/',
         pipeline=train_pipeline),
     test=dict(
@@ -284,7 +284,7 @@ lr_config = dict(
     step=[16, 19])
 total_epochs = 20
 
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=2)
 # yapf:disable
 log_config = dict(
     interval=20,
