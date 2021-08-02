@@ -267,7 +267,7 @@ data = dict(
         #ann_file=data_root + 'annotations/testA.json',
         #img_prefix=data_root + 'test-A-image/',
         ann_file=data_root + 'annotations/testB.json',
-        img_prefix=data_root + 'test-B-image/',
+        img_prefix='../data/test-B-image/',
         pipeline=test_pipeline))
 
 evaluation = dict(interval=1, metric='bbox')
