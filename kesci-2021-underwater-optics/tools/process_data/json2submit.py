@@ -42,10 +42,10 @@ with open(submit_path, 'w') as f:
             continue
         xmax = xmin + w
         ymax = ymin + h
-        xmin = int(round(xmin))
-        ymin = int(round(ymin))
-        xmax = int(round(xmax))
-        ymax = int(round(ymax))
+        xmin = int(xmin)
+        ymin = int(ymin)
+        xmax = int(xmax)
+        ymax = int(ymax)
         score = res['score']
         string = str(catename) + ',' + str(image_name) + ',' + str(score) + ',' + str(xmin) + ',' + str(ymin) + ',' +\
                  str(xmax) + ',' + str(ymax) + '\n'
