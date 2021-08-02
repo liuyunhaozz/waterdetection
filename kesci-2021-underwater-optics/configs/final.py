@@ -62,7 +62,8 @@ model = dict(
             type='SingleRoIExtractor',
             roi_layer=dict(type='RoIAlign', output_size=7, sampling_ratio=0),
             out_channels=256,
-            featmap_strides=[4, 8, 16, 32]),
+            featmap_strides=[4, 8, 16, 32],
+            add_context=True),
         bbox_head=[
             dict(
                 type='Shared2FCBBoxHead',
@@ -211,7 +212,7 @@ test_cfg = dict(
         nms=dict(type='soft_nms', iou_threshold=0.5, min_score=0.0001), max_per_img=300))
 
 dataset_type = 'UnderwaterOpticsDataset'
-data_root = 'data/'
+data_root = '../data/train/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -219,8 +220,8 @@ train_pipeline = [
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         type='Resize',
-        img_scale=[(2000, 1216),
-                   (2000, 704)],
+        img_scale=[(1720, 1216),
+                   (1720, 704)],
         multiscale_mode='range',
         keep_ratio=True),
     dict(type='RandomFlip', direction=['horizontal'], flip_ratio=0.5),
@@ -252,19 +253,19 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_filter_old_scallop.json',
-        img_prefix=data_root + 'train/image/',
+        ann_file=data_root + 'annotations/train_c1.json',
+        img_prefix=data_root + 'image/',
         pipeline=train_pipeline,
         filter_empty_gt=True),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/train_filter_old_scallop.json',
-        img_prefix=data_root + 'train/image/',
+        ann_file=data_root + 'annotations/train_c1.json',
+        img_prefix=data_root + 'image/',
         pipeline=train_pipeline),
     test=dict(
         type=dataset_type,
-        # ann_file=data_root + 'annotations/testA.json',
-        # img_prefix=data_root + 'test-A-image/',
+        #ann_file=data_root + 'annotations/testA.json',
+        #img_prefix=data_root + 'test-A-image/',
         ann_file=data_root + 'annotations/testB.json',
         img_prefix=data_root + 'test-B-image/',
         pipeline=test_pipeline))
@@ -294,6 +295,6 @@ log_config = dict(
 # yapf:enable
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = 'data/pretrained/detectors_htc_r50_1x_coco-329b1453.pth'
+load_from = '../data/pretrained/detectors_htc_r50_1x_coco-329b1453.pth'
 resume_from = None
 workflow = [('train', 1)]

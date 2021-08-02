@@ -7,3 +7,4 @@ data
 ./underwater-detection/work_dirs/
 ./underwater-detection/submit/
 *.out
+underwater-detection

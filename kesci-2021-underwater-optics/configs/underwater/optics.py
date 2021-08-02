@@ -1,10 +1,9 @@
-
 model = dict(
     type='CascadeRCNN',
     pretrained=None,
     backbone=dict(
         type='DetectoRS_ResNet',
-        depth=101,
+        depth=50,
         num_stages=4,
         out_indices=(0, 1, 2, 3),
         frozen_stages=1,
@@ -26,7 +25,7 @@ model = dict(
         rfp_backbone=dict(
             rfp_inplanes=256,
             type='DetectoRS_ResNet',
-            depth=101,
+            depth=50,
             num_stages=4,
             out_indices=(0, 1, 2, 3),
             frozen_stages=1,
@@ -52,10 +51,8 @@ model = dict(
             target_stds=[1.0, 1.0, 1.0, 1.0]),
         loss_cls=dict(
             type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
-        # reg_decoded_bbox = True,  # 使用GIoU时注意添加
         loss_bbox=dict(
             type='SmoothL1Loss', beta=0.1111111111111111, loss_weight=1.0)),
-        # loss_bbox = dict(type='GIoULoss',loss_weight=5.0)),           
     roi_head=dict(
         type='CascadeRoIHead',
         num_stages=3,
@@ -64,8 +61,7 @@ model = dict(
             type='SingleRoIExtractor',
             roi_layer=dict(type='RoIAlign', output_size=7, sampling_ratio=0),
             out_channels=256,
-            featmap_strides=[4, 8, 16, 32],
-            add_context=True),
+            featmap_strides=[4, 8, 16, 32]),
         bbox_head=[
             dict(
                 type='Shared2FCBBoxHead',
@@ -83,10 +79,8 @@ model = dict(
                     use_sigmoid=False,
                     loss_weight=1.0,
                     smoothing=0.001),
-                # reg_decoded_bbox = True,   # 使用GIoU时注意添加
                 loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
                                loss_weight=1.0)),
-                # loss_bbox = dict(type='GIoULoss',loss_weight=5.0)),
             dict(
                 type='Shared2FCBBoxHead',
                 in_channels=256,
@@ -105,7 +99,6 @@ model = dict(
                     smoothing=0.001),
                 loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
                                loss_weight=1.0)),
-                # loss_bbox = dict(type='GIoULoss',loss_weight=5.0)),
             dict(
                 type='Shared2FCBBoxHead',
                 in_channels=256,
@@ -123,7 +116,6 @@ model = dict(
                     loss_weight=1.0,
                     smoothing=0.001),
                 loss_bbox=dict(type='SmoothL1Loss', beta=1.0, loss_weight=1.0))
-                # loss_bbox = dict(type='GIoULoss',loss_weight=5.0))
         ]))
 train_cfg = dict(
     rpn=dict(
@@ -154,9 +146,9 @@ train_cfg = dict(
         dict(
             assigner=dict(
                 type='MaxIoUAssigner',
-                pos_iou_thr=0.55,
-                neg_iou_thr=0.55,
-                min_pos_iou=0.55,
+                pos_iou_thr=0.5,
+                neg_iou_thr=0.5,
+                min_pos_iou=0.5,
                 match_low_quality=False,
                 ignore_iof_thr=-1),
             sampler=dict(
@@ -170,9 +162,9 @@ train_cfg = dict(
         dict(
             assigner=dict(
                 type='MaxIoUAssigner',
-                pos_iou_thr=0.65,
-                neg_iou_thr=0.65,
-                min_pos_iou=0.65,
+                pos_iou_thr=0.6,
+                neg_iou_thr=0.6,
+                min_pos_iou=0.6,
                 match_low_quality=False,
                 ignore_iof_thr=-1),
             sampler=dict(
@@ -186,9 +178,9 @@ train_cfg = dict(
         dict(
             assigner=dict(
                 type='MaxIoUAssigner',
-                pos_iou_thr=0.75,
-                neg_iou_thr=0.75,
-                min_pos_iou=0.75,
+                pos_iou_thr=0.7,
+                neg_iou_thr=0.7,
+                min_pos_iou=0.7,
                 match_low_quality=False,
                 ignore_iof_thr=-1),
             sampler=dict(
@@ -218,7 +210,7 @@ test_cfg = dict(
         nms=dict(type='soft_nms', iou_threshold=0.5, min_score=0.0001), max_per_img=300))
 
 dataset_type = 'UnderwaterOpticsDataset'
-data_root = '../data/train/'
+data_root = '../data/train'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -226,8 +218,8 @@ train_pipeline = [
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         type='Resize',
-        img_scale=[(1200, 804),
-                   (1200, 352)],
+        img_scale=[(2000, 1216),
+                   (2000, 704)],
         multiscale_mode='range',
         keep_ratio=True),
     dict(type='RandomFlip', direction=['horizontal'], flip_ratio=0.5),
@@ -243,7 +235,7 @@ test_pipeline = [
     dict(
         type='MultiScaleFlipAug',
         # 0.569
-        img_scale=[(1200, 352), (1200, 480), (1200, 804)],
+        img_scale=[(2000, 704), (2000, 960), (2000, 1216)],
         flip=True,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -307,6 +299,6 @@ log_config = dict(
 # yapf:enable
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-load_from = '../data/pretrained/detectors_htc_r101_20e_coco_20210419_203638-348d533b.pth'
+load_from = '../data/pretrained/detectors_htc_r50_1x_coco-329b1453.pths'
 resume_from = 'work_dirs/optics/epoch_22.pth'
 workflow = [('train', 1)]
