@@ -7,8 +7,8 @@ import numpy as np
 #result_file = 'results/testA.bbox.json'
 #submit_path = 'submit/testA.csv'
 raw_anno_file = '../data/train/annotations/testB.json'
-result_file = 'results/testB.bbox.json'
-submit_path = 'submit/testB.csv'
+result_file = 'results/testB27.bbox.json'
+submit_path = 'submit/testBf.csv'
 with open(raw_anno_file, 'r') as f:
     annos = json.load(f)
 imageid2name = {}
@@ -42,10 +42,10 @@ with open(submit_path, 'w') as f:
             continue
         xmax = xmin + w
         ymax = ymin + h
-        xmin = int(xmin)
-        ymin = int(ymin)
-        xmax = int(xmax)
-        ymax = int(ymax)
+        xmin = int(round(xmin))
+        ymin = int(round(ymin))
+        xmax = int(round(xmax))
+        ymax = int(round(ymax))
         score = res['score']
         string = str(catename) + ',' + str(image_name) + ',' + str(score) + ',' + str(xmin) + ',' + str(ymin) + ',' +\
                  str(xmax) + ',' + str(ymax) + '\n'
